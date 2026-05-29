@@ -1,0 +1,19 @@
+# Title: Custom TikTok Deep Link & Redirect Blocker
+# Description: Prevents TikTok from redirecting web wrappers to the native app
+# For use with Native Alpha custom blocklist URL
+
+# Block the deep-link protocol subdomains
+127.0.0.1 snssdk1233
+127.0.0.1 snssdk
+
+# Block mobile web app-routing and redirect tracking servers
+127.0.0.1 ://tiktokv.com
+127.0.0.1 ://tiktok.com
+127.0.0.1 ://tiktokv.com
+127.0.0.1 ://tiktok.com
+127.0.0.1 ://tiktokv.com
+127.0.0.1 ://ibyteimg.com
+
+# Block general ByteDance app-link routing services
+127.0.0.1 ://bytedance.com
+127.0.0.1 ://byteoversea.com
