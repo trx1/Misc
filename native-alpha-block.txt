@@ -4,3 +4,4 @@
 
 # Block the deep-link protocol subdomains
 snssdk*://
+snssdk1233://aweme
