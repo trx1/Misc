@@ -46,7 +46,7 @@
       Reference: https://css-tricks.com/responsive-hexagon-grid-using-modern-css/
     */
     :root {
-      --s: 38px;
+      --s: 50px;
       /* Hexagon size (width) */
       --g: 3px;
       /* Gap between hexagons */
@@ -94,7 +94,7 @@
     }
 
     .hex-code {
-      font-size: 8.5px;
+      font-size: 12px;
       font-weight: 900;
       font-family: 'Inter', sans-serif;
       line-height: 1;
@@ -107,12 +107,12 @@
     /* Print scaling optimization for 8.5" x 11.5" */
     @media print {
       :root {
-        --s: 34px;
+        --s: 46px;
         --g: 2px;
       }
 
       .hex-code {
-        font-size: 7.5px !important;
+        font-size: 11px !important;
       }
 
       .hex-cell {
@@ -128,7 +128,7 @@
       }
 
       .hex-code {
-        font-size: 7px;
+        font-size: 11px;
       }
 
       .hex-cell {
@@ -178,7 +178,7 @@
     class="no-print max-w-5xl mx-auto mb-6 bg-white p-4 rounded-xl shadow-md border border-gray-200 flex flex-wrap items-center justify-between gap-4">
     <div>
       <h1 class="text-xl font-extrabold text-gray-800 tracking-tight">Copic Hex Color Chart</h1>
-      <p class="text-xs text-gray-500">Interlocking Honeycomb Grid • 358 Unique Colors • Formatted for 8.5" x 11.5"
+      <p class="text-xs text-gray-500">358 Unique Colors • Formatted for 8.5" x 11.5"
         Print</p>
     </div>
 
@@ -235,7 +235,7 @@
     <div>
       <!-- Minimalist Printable Header -->
       <div class="flex justify-between items-baseline pb-2 mb-2 border-b border-gray-300">
-        <h2 class="text-sm font-black tracking-wider text-gray-800 uppercase">Copic Marker Master Interlocking Color
+        <h2 class="text-sm font-black tracking-wider text-gray-800 uppercase">Copic Marker Color
           Chart</h2>
         <span id="sort-status-label" class="text-[9px] font-semibold text-gray-500 uppercase tracking-widest">Sorted By
           Color Label • 358 Swatches</span>
