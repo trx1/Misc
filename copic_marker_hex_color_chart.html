@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Copic Hex Color Chart</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <style>
+   
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* Print Setup for 8.5" x 11" / 8.5" x 11.5" standard paper */
+    @page {
+      size: 8.5in 11in;
+      margin: 0.25in;
+    }
+
+    @media print {
+      .no-print {
+        display: none !important;
+      }
+
+      body {
+        background: white !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      .page-container {
+        box-shadow: none !important;
+        padding: 0 !important;
+        width: 100% !important;
+        max-width: none !important;
+        margin: 0 !important;
+      }
+    }
+
+    /* 
+      Responsive Hexagon Grid Technique 
+      Reference: https://css-tricks.com/responsive-hexagon-grid-using-modern-css/
+    */
+    :root {
+      --s: 38px;
+      /* Hexagon size (width) */
+      --g: 3px;
+      /* Gap between hexagons */
+    }
+
+    /* .hex-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--g);
+      justify-content: center;
+      padding-bottom: calc(var(--s) / (4 * 0.866025));
+      margin: 0 auto;
+    } */
+
+    .hex-cell {
+      position: relative;
+      width: var(--s);
+      aspect-ratio: 0.866025;
+      /* cos(30deg) ratio */
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      user-select: none;
+      clip-path: polygon(-50% 50%, 50% 100%, 150% 50%, 50% 0);
+      margin-bottom: calc(var(--s) / -3.4641);
+      /* Overlap vertical rows */
+      transition: transform 0.15s ease, z-index 0.15s ease, filter 0.15s ease;
+      cursor: pointer;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      filter: drop-shadow(0px 0px 0.75px rgba(0, 0, 0, 0.75));
+    }
+
+    /* Shift every alternate row for true honeycomb interlocking */
+    .hex-row-shift {
+      margin-left: calc((var(--s) + var(--g)) / 2);
+    }
+
+    .hex-cell:hover {
+      transform: scale(1.35);
+      z-index: 100;
+      filter: drop-shadow(0px 4px 8px rgba(0, 0, 0, 0.4));
+    }
+
+    .hex-code {
+      font-size: 8.5px;
+      font-weight: 900;
+      font-family: 'Inter', sans-serif;
+      line-height: 1;
+      letter-spacing: -0.03em;
+      pointer-events: none;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+
+    /* Print scaling optimization for 8.5" x 11.5" */
+    @media print {
+      :root {
+        --s: 34px;
+        --g: 2px;
+      }
+
+      .hex-code {
+        font-size: 7.5px !important;
+      }
+
+      .hex-cell {
+        filter: drop-shadow(0px 0px 0.5px rgba(0, 0, 0, 0.6)) !important;
+      }
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 640px) {
+      :root {
+        --s: 32px;
+        --g: 2px;
+      }
+
+      .hex-code {
+        font-size: 7px;
+      }
+
+      .hex-cell {
+        filter: drop-shadow(0px 0px 0.5px rgba(0, 0, 0, 0.6)) !important;
+      }
+    }
+
+    /* Outline mode when colors are turned off */
+    body.no-color .hex-cell {
+      background-color: #ffffff !important;
+      outline: 1.5px solid #111827 !important;
+      outline-offset: -1.5px;
+    }
+
+    body.no-color .hex-code {
+      color: #111827 !important;
+    }
+
+    .container {
+
+
+      display: flex;
+      gap: var(--g);
+      flex-wrap: wrap;
+      padding-bottom: calc(var(--s)/(4*cos(30deg)));
+      container-type: inline-size;
+    }
+
+    .container>* {
+      width: var(--s);
+      aspect-ratio: cos(30deg);
+      border-radius: 50% / 25%;
+      corner-shape: bevel;
+      margin-bottom: calc(var(--s)/(-4*cos(30deg)));
+      --_n: round(down, (100cqw + var(--g))/(var(--s) + var(--g)));
+      --_m: round(down, (100cqw - (var(--s) - var(--g))/2)/(var(--s) + var(--g)));
+      --_c: round(down, 1 - mod((sibling-index() - 1 + var(--_m))/(var(--_n) + var(--_m)), 1));
+      margin-left: calc(var(--_c)*(var(--s) + var(--g))/2);
+    }
+  </style>
+</head>
+
+<body class="bg-gray-100 text-gray-900 min-h-screen py-6 px-4">
+
+  <!-- Floating Toolbar (Hidden during print) -->
+  <header
+    class="no-print max-w-5xl mx-auto mb-6 bg-white p-4 rounded-xl shadow-md border border-gray-200 flex flex-wrap items-center justify-between gap-4">
+    <div>
+      <h1 class="text-xl font-extrabold text-gray-800 tracking-tight">Copic Hex Color Chart</h1>
+      <p class="text-xs text-gray-500">Interlocking Honeycomb Grid • 358 Unique Colors • Formatted for 8.5" x 11.5"
+        Print</p>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-3">
+      <!-- Color Toggle Button -->
+      <button id="toggle-color-btn" onclick="toggleColors()"
+        class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-xs font-bold py-2 px-3 rounded-lg shadow-sm transition-all flex items-center gap-1.5">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-23">
+          </path>
+        </svg>
+        <span id="toggle-color-label">Colors: ON</span>
+      </button>
+
+      <!-- Sorting Selector -->
+      <div class="flex items-center gap-1.5 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-200 text-xs">
+        <label for="sort-select" class="font-semibold text-gray-600">Sort By:</label>
+        <select id="sort-select" onchange="handleSortChange()"
+          class="bg-white border border-gray-300 rounded px-2 py-1 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <option value="code">Color Label (A-Z)</option>
+          <option value="hueLightness">Hue and Lighness</option>
+          <option value="hue">Hue Spectrum</option>
+          <option value="saturation">Saturation</option>
+          <option value="lightness">Lightness</option>
+        </select>
+      </div>
+
+      <!-- Search Box -->
+      <div class="flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-200">
+        <label for="search" class="text-xs font-semibold text-gray-600">Find:</label>
+        <input type="text" id="search" placeholder="B05, RV11..."
+          class="bg-white border border-gray-300 rounded px-2 py-0.5 text-xs w-20 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          onkeyup="filterHexes()">
+      </div>
+
+      <!-- Print Button -->
+      <button onclick="window.print()"
+        class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2 px-4 rounded-lg shadow transition-all flex items-center gap-1.5">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z">
+          </path>
+        </svg>
+        Print Chart
+      </button>
+    </div>
+  </header>
+
+  <!-- Printable Page Boundary Container -->
+  <main
+    class="page-container max-w-[8.5in] min-h-[11in] mx-auto bg-white p-5 shadow-xl rounded-lg border border-gray-200 relative flex flex-col justify-between">
+
+    <div>
+      <!-- Minimalist Printable Header -->
+      <div class="flex justify-between items-baseline pb-2 mb-2 border-b border-gray-300">
+        <h2 class="text-sm font-black tracking-wider text-gray-800 uppercase">Copic Marker Master Interlocking Color
+          Chart</h2>
+        <span id="sort-status-label" class="text-[9px] font-semibold text-gray-500 uppercase tracking-widest">Sorted By
+          Color Label • 358 Swatches</span>
+      </div>
+
+      <!-- Modern CSS Interlocking Hexagon Grid Container -->
+      <!-- <div id="hex-container" class="hex-container"> -->
+      <div id="hex-container" class="container"></div>
+      <!-- Dynamically populated hex cells -->
+    </div>
+    </div>
+
+    <!-- Printable Footer -->
+    <footer
+      class="mt-4 pt-2 border-t border-gray-200 flex justify-between items-center text-[8px] text-gray-400 uppercase tracking-wider">
+      <span>Layout optimized for Standard 8.5" x 11" / 8.5" x 11.5" Paper</span>
+      <span>Complete Range (358 Unique Codes)</span>
+    </footer>
+  </main>
+
+  <!-- Note the type="module" attribute -->
+  <script type="module">
+    import chroma from 'https://unpkg.com/chroma-js@3.0.0/index.js';
+    window.chroma = chroma;
+  </script>
+  <script>
+    // Complete 358 Official Copic Marker Colors
+    const rawCopicData = [
+      // Special
+      {code: "0", color: "#FFFFFF"}, {code: "100", color: "#1D1D1D"}, {code: "110", color: "#0F0F11"},
+
+      // B Family
+      {code: "B0000", color: "#EBF6F9"}, {code: "B000", color: "#DDEFF5"}, {code: "B00", color: "#C6E5EE"},
+      {code: "B01", color: "#B5DDEB"}, {code: "B02", color: "#92CDE3"}, {code: "B04", color: "#54B8D8"},
+      {code: "B05", color: "#009ECB"}, {code: "B06", color: "#0082BD"}, {code: "B12", color: "#B8DAEC"},
+      {code: "B14", color: "#61A9D9"}, {code: "B16", color: "#0087C7"}, {code: "B18", color: "#1D5F9A"},
+      {code: "B21", color: "#D7E6F3"}, {code: "B23", color: "#94BACD"}, {code: "B24", color: "#63A4D6"},
+      {code: "B26", color: "#3B7EB9"}, {code: "B28", color: "#1A5287"}, {code: "B29", color: "#0B4176"},
+      {code: "B32", color: "#D6E4EB"}, {code: "B34", color: "#8CB8CE"}, {code: "B37", color: "#1B4D75"},
+      {code: "B39", color: "#1A3962"}, {code: "B41", color: "#E0E8EF"}, {code: "B45", color: "#7FB3D7"},
+      {code: "B52", color: "#A0B7C7"}, {code: "B60", color: "#E4E3EC"}, {code: "B63", color: "#9CA4CB"},
+      {code: "B66", color: "#6370AA"}, {code: "B69", color: "#253E8B"}, {code: "B79", color: "#2E365E"},
+      {code: "B91", color: "#D6D9DF"}, {code: "B93", color: "#9BAEC4"}, {code: "B95", color: "#6885A3"},
+      {code: "B97", color: "#3D5B7C"}, {code: "B99", color: "#1B334B"},
+
+      // BG Family
+      {code: "BG0000", color: "#E7F6F5"}, {code: "BG000", color: "#D6F0ED"}, {code: "BG01", color: "#B6E5E0"},
+      {code: "BG02", color: "#95D8D0"}, {code: "BG05", color: "#48C3BD"}, {code: "BG07", color: "#00A89C"},
+      {code: "BG09", color: "#008E85"}, {code: "BG10", color: "#E1F2EE"}, {code: "BG11", color: "#BFE5DC"},
+      {code: "BG13", color: "#95D7C7"}, {code: "BG15", color: "#4CBFA6"}, {code: "BG18", color: "#009377"},
+      {code: "BG23", color: "#A1D9CD"}, {code: "BG32", color: "#B0DEC9"}, {code: "BG34", color: "#7BC8B0"},
+      {code: "BG45", color: "#91D4DE"}, {code: "BG49", color: "#009EAA"}, {code: "BG53", color: "#B4DEE2"},
+      {code: "BG57", color: "#4DBCC9"}, {code: "BG70", color: "#D9E3DF"}, {code: "BG72", color: "#87A5A0"},
+      {code: "BG75", color: "#507570"}, {code: "BG78", color: "#2B4B47"}, {code: "BG90", color: "#DDE4D8"},
+      {code: "BG93", color: "#A8BAA9"}, {code: "BG96", color: "#6C8472"}, {code: "BG99", color: "#3D5443"},
+
+      // BV Family
+      {code: "BV0000", color: "#F0EDF5"}, {code: "BV000", color: "#E4E0EE"}, {code: "BV00", color: "#D6CEE5"},
+      {code: "BV01", color: "#C6BDDC"}, {code: "BV02", color: "#A3A0CD"}, {code: "BV04", color: "#6E75AF"},
+      {code: "BV08", color: "#544686"}, {code: "BV11", color: "#DDD8E7"}, {code: "BV13", color: "#A29BBE"},
+      {code: "BV17", color: "#6B658D"}, {code: "BV20", color: "#CBCDDA"}, {code: "BV23", color: "#9E9DB1"},
+      {code: "BV25", color: "#6A687A"}, {code: "BV29", color: "#2B303A"}, {code: "BV31", color: "#EAE6EC"},
+      {code: "BV34", color: "#A8A5AE"},
+
+      // C Family
+      {code: "C-00", color: "#F4F5F7"}, {code: "C-0", color: "#E6E8EA"}, {code: "C-1", color: "#D8DCDD"},
+      {code: "C-2", color: "#C8CCCC"}, {code: "C-3", color: "#B3B8B9"}, {code: "C-4", color: "#9FA4A5"},
+      {code: "C-5", color: "#858A8C"}, {code: "C-6", color: "#6E7274"}, {code: "C-7", color: "#555A5C"},
+      {code: "C-8", color: "#404446"}, {code: "C-9", color: "#2A2E30"}, {code: "C-10", color: "#181B1C"},
+
+      // E Family
+      {code: "E0000", color: "#FAF3EE"}, {code: "E000", color: "#F7E9DE"}, {code: "E00", color: "#F5DEC9"},
+      {code: "E01", color: "#F7D8C4"}, {code: "E02", color: "#F4CDB7"}, {code: "E04", color: "#C099A0"},
+      {code: "E07", color: "#A05545"}, {code: "E08", color: "#AD4830"}, {code: "E09", color: "#9E3C26"},
+      {code: "E11", color: "#F5CBAE"}, {code: "E13", color: "#C69372"}, {code: "E15", color: "#C77B4A"},
+      {code: "E17", color: "#85432E"}, {code: "E18", color: "#583023"}, {code: "E19", color: "#8C2F19"},
+      {code: "E21", color: "#F5D6B6"}, {code: "E23", color: "#C99A7B"}, {code: "E25", color: "#9E6D4E"},
+      {code: "E27", color: "#674936"}, {code: "E29", color: "#4E2F1E"}, {code: "E30", color: "#F2E8D5"},
+      {code: "E31", color: "#E7D6B9"}, {code: "E33", color: "#D9B48F"}, {code: "E34", color: "#CCA071"},
+      {code: "E35", color: "#C4905D"}, {code: "E37", color: "#996230"}, {code: "E39", color: "#7B4219"},
+      {code: "E40", color: "#F0E7DD"}, {code: "E41", color: "#F5E4D7"}, {code: "E42", color: "#DDD0BD"},
+      {code: "E43", color: "#C7B79E"}, {code: "E44", color: "#988979"}, {code: "E47", color: "#665446"},
+      {code: "E49", color: "#3D3027"}, {code: "E50", color: "#F7EFE4"}, {code: "E51", color: "#F2E2CD"},
+      {code: "E53", color: "#DFCDA5"}, {code: "E55", color: "#C1A67B"}, {code: "E57", color: "#8B6842"},
+      {code: "E59", color: "#644C35"}, {code: "E70", color: "#E3D5CD"}, {code: "E71", color: "#BFAD9E"},
+      {code: "E74", color: "#8B7366"}, {code: "E77", color: "#5A4438"}, {code: "E79", color: "#3B2A22"},
+      {code: "E81", color: "#E5DAAD"}, {code: "E84", color: "#A89A74"}, {code: "E87", color: "#665E45"},
+      {code: "E89", color: "#423D2C"}, {code: "E93", color: "#F6C5AA"}, {code: "E95", color: "#EE9869"},
+      {code: "E97", color: "#DE7543"}, {code: "E99", color: "#8B431D"},
+
+      // Fluorescents (F)
+      {code: "FB2", color: "#63C7FA"}, {code: "FBG2", color: "#6FE6C4"}, {code: "FG2", color: "#9DF140"},
+      {code: "FGG2", color: "#D1F524"}, {code: "FRV1", color: "#FF69B4"}, {code: "FOR2", color: "#FF7336"},
+      {code: "FY1", color: "#FFF000"}, {code: "FYG1", color: "#CCFF00"}, {code: "FYG2", color: "#B8F500"},
+      {code: "FYR1", color: "#FFA500"},
+
+      // G Family
+      {code: "G0000", color: "#EDF8F4"}, {code: "G000", color: "#DFEFEA"}, {code: "G00", color: "#C7E6DB"},
+      {code: "G02", color: "#A6D9BE"}, {code: "G03", color: "#8DC899"}, {code: "G05", color: "#3DAE63"},
+      {code: "G07", color: "#009A44"}, {code: "G09", color: "#81C343"}, {code: "G12", color: "#CFE3CD"},
+      {code: "G14", color: "#85C46C"}, {code: "G16", color: "#00A876"}, {code: "G17", color: "#009755"},
+      {code: "G19", color: "#008B5D"}, {code: "G20", color: "#EBF1D5"}, {code: "G21", color: "#B7D3C0"},
+      {code: "G24", color: "#9CB89D"}, {code: "G28", color: "#006738"}, {code: "G29", color: "#194A2C"},
+      {code: "G40", color: "#E4EDD7"}, {code: "G43", color: "#BFCE98"}, {code: "G46", color: "#4C7856"},
+      {code: "G82", color: "#A9BA95"}, {code: "G85", color: "#7A977B"}, {code: "G94", color: "#768B6E"},
+      {code: "G99", color: "#455931"},
+
+      // N Family
+      {code: "N-0", color: "#EBEBEB"}, {code: "N-1", color: "#DEDEDE"}, {code: "N-2", color: "#D0D0D0"},
+      {code: "N-3", color: "#BEBEBE"}, {code: "N-4", color: "#A9A9A9"}, {code: "N-5", color: "#8F8F8F"},
+      {code: "N-6", color: "#777777"}, {code: "N-7", color: "#5E5E5E"}, {code: "N-8", color: "#474747"},
+      {code: "N-9", color: "#303030"}, {code: "N-10", color: "#1C1C1C"},
+
+      // R Family
+      {code: "R0000", color: "#FDF2F0"}, {code: "R000", color: "#F9E4E1"}, {code: "R00", color: "#F6D2C9"},
+      {code: "R01", color: "#F6C1B5"}, {code: "R02", color: "#F7B19E"}, {code: "R05", color: "#F2594B"},
+      {code: "R08", color: "#EA392A"}, {code: "R11", color: "#F8CCA9"}, {code: "R12", color: "#F6B491"},
+      {code: "R14", color: "#F27866"}, {code: "R17", color: "#EE4A36"}, {code: "R20", color: "#F9CFCA"},
+      {code: "R21", color: "#F6B2AB"}, {code: "R22", color: "#F48B8B"}, {code: "R24", color: "#ED4552"},
+      {code: "R27", color: "#E41B36"}, {code: "R29", color: "#D3122A"}, {code: "R30", color: "#FBE3DE"},
+      {code: "R32", color: "#F7ACA5"}, {code: "R35", color: "#E7475E"}, {code: "R37", color: "#C93648"},
+      {code: "R39", color: "#9F2348"}, {code: "R43", color: "#EF757D"}, {code: "R46", color: "#DC2848"},
+      {code: "R56", color: "#BB6B7B"}, {code: "R59", color: "#862B3E"}, {code: "R81", color: "#E8B2BF"},
+      {code: "R83", color: "#CD7C90"}, {code: "R85", color: "#B34A6A"}, {code: "R89", color: "#5C1727"},
+
+      // RV Family
+      {code: "RV0000", color: "#FAF0F5"}, {code: "RV000", color: "#F4E0EC"}, {code: "RV00", color: "#EFCCE1"},
+      {code: "RV02", color: "#F7B9D6"}, {code: "RV04", color: "#F06EA9"}, {code: "RV06", color: "#EA4095"},
+      {code: "RV09", color: "#BD1E7B"}, {code: "RV10", color: "#F9E4EC"}, {code: "RV11", color: "#F4C4D4"},
+      {code: "RV13", color: "#F091B5"}, {code: "RV14", color: "#E85C8D"}, {code: "RV17", color: "#BD327C"},
+      {code: "RV19", color: "#AA1D6D"}, {code: "RV21", color: "#F9D5E1"}, {code: "RV23", color: "#F29BB2"},
+      {code: "RV25", color: "#EA5986"}, {code: "RV29", color: "#C81A58"}, {code: "RV32", color: "#F9D2C6"},
+      {code: "RV34", color: "#F4AA9B"}, {code: "RV42", color: "#F6B7A6"}, {code: "RV52", color: "#F8CCD9"},
+      {code: "RV55", color: "#E2739B"}, {code: "RV63", color: "#BC86A3"}, {code: "RV66", color: "#8C496A"},
+      {code: "RV69", color: "#4A1F35"}, {code: "RV91", color: "#E4D1D9"}, {code: "RV93", color: "#D1A7B9"},
+      {code: "RV95", color: "#A16E85"}, {code: "RV99", color: "#3F222E"},
+
+      // T Family
+      {code: "T-0", color: "#ECECEC"}, {code: "T-1", color: "#DFDFDF"}, {code: "T-2", color: "#D2D2D2"},
+      {code: "T-3", color: "#C0C0C0"}, {code: "T-4", color: "#ABABAB"}, {code: "T-5", color: "#929292"},
+      {code: "T-6", color: "#797979"}, {code: "T-7", color: "#616161"}, {code: "T-8", color: "#484848"},
+      {code: "T-9", color: "#313131"}, {code: "T-10", color: "#1D1D1D"},
+
+      // V Family
+      {code: "V0000", color: "#F5F0F7"}, {code: "V000", color: "#EAE0F0"}, {code: "V00", color: "#DECDE5"},
+      {code: "V01", color: "#D8BFDB"}, {code: "V04", color: "#BF6BB0"}, {code: "V05", color: "#B7519E"},
+      {code: "V06", color: "#A6358C"}, {code: "V09", color: "#741B66"}, {code: "V12", color: "#E3C9E3"},
+      {code: "V15", color: "#B87DB2"}, {code: "V17", color: "#8D4C93"}, {code: "V20", color: "#DFD7E3"},
+      {code: "V22", color: "#9E88A4"}, {code: "V25", color: "#674E6F"}, {code: "V28", color: "#48364F"},
+      {code: "V91", color: "#D6C0CA"}, {code: "V93", color: "#BA98A8"}, {code: "V95", color: "#885D73"},
+      {code: "V99", color: "#31222B"},
+
+      // W Family
+      {code: "W-00", color: "#F6F5F2"}, {code: "W-0", color: "#EBE9E4"}, {code: "W-1", color: "#DEDCD6"},
+      {code: "W-2", color: "#D1CEC7"}, {code: "W-3", color: "#BCB8B0"}, {code: "W-4", color: "#A7A39A"},
+      {code: "W-5", color: "#8E8A81"}, {code: "W-6", color: "#77736A"}, {code: "W-7", color: "#5E5B53"},
+      {code: "W-8", color: "#47443D"}, {code: "W-9", color: "#312F2A"}, {code: "W-10", color: "#1D1C19"},
+
+      // Y Family
+      {code: "Y0000", color: "#FEFDEB"}, {code: "Y000", color: "#FFFDD8"}, {code: "Y00", color: "#FFFBB9"},
+      {code: "Y02", color: "#FFF785"}, {code: "Y04", color: "#FFF35B"}, {code: "Y06", color: "#FFF000"},
+      {code: "Y08", color: "#FEEB00"}, {code: "Y11", color: "#FFF9C6"}, {code: "Y13", color: "#FFF59D"},
+      {code: "Y15", color: "#FFE853"}, {code: "Y17", color: "#FFDF00"}, {code: "Y18", color: "#FFD900"},
+      {code: "Y19", color: "#FFD000"}, {code: "Y21", color: "#FEEBB3"}, {code: "Y23", color: "#F5DC94"},
+      {code: "Y26", color: "#C6AF48"}, {code: "Y28", color: "#A79140"}, {code: "Y32", color: "#FCD999"},
+      {code: "Y35", color: "#FFB948"}, {code: "Y38", color: "#FFA827"},
+
+      // YG Family
+      {code: "YG0000", color: "#F6FAF0"}, {code: "YG00", color: "#EAF5D8"}, {code: "YG01", color: "#E2F2C5"},
+      {code: "YG03", color: "#D2EB9D"}, {code: "YG05", color: "#B8E375"}, {code: "YG06", color: "#98D645"},
+      {code: "YG07", color: "#7EC636"}, {code: "YG09", color: "#6BB82D"}, {code: "YG11", color: "#E2EED3"},
+      {code: "YG13", color: "#CDE3AF"}, {code: "YG17", color: "#69B846"}, {code: "YG21", color: "#FAF6BE"},
+      {code: "YG23", color: "#E9EA92"}, {code: "YG25", color: "#C1D747"}, {code: "YG41", color: "#CCEADA"},
+      {code: "YG45", color: "#9EDAC5"}, {code: "YG61", color: "#C8DEC7"}, {code: "YG63", color: "#93C59A"},
+      {code: "YG67", color: "#4F9B5E"}, {code: "YG91", color: "#DECFA5"}, {code: "YG93", color: "#C5B883"},
+      {code: "YG95", color: "#9E904B"}, {code: "YG97", color: "#6D642D"}, {code: "YG99", color: "#45431E"},
+
+      // YR Family
+      {code: "YR0000", color: "#FFF4EC"}, {code: "YR000", color: "#FFE7D6"}, {code: "YR00", color: "#FED4B7"},
+      {code: "YR01", color: "#FDC29C"}, {code: "YR02", color: "#FBB184"}, {code: "YR04", color: "#FF8D38"},
+      {code: "YR07", color: "#F75C03"}, {code: "YR09", color: "#E34200"}, {code: "YR12", color: "#FDCB89"},
+      {code: "YR14", color: "#FCA44D"}, {code: "YR15", color: "#FA9223"}, {code: "YR16", color: "#F78200"},
+      {code: "YR18", color: "#E65200"}, {code: "YR20", color: "#FDE2C6"}, {code: "YR21", color: "#FBCB8B"},
+      {code: "YR23", color: "#EDAA56"}, {code: "YR24", color: "#E39B35"}, {code: "YR27", color: "#B85C15"},
+      {code: "YR30", color: "#FFF3DD"}, {code: "YR31", color: "#FBE2B2"}, {code: "YR61", color: "#FBC4AA"},
+      {code: "YR65", color: "#FA8C4F"}, {code: "YR68", color: "#E85100"}
+    ];
+
+    let showColors = true;
+
+    // Helper: Convert Hex to HSL
+    function hexToHSL(hexColor) {
+      if (!hexColor || typeof hexColor !== 'string') return {h: 0, s: 0, l: 0};
+      const hex = hexColor.replace('#', '');
+      if (hex.length < 6) return {h: 0, s: 0, l: 0};
+
+      const r = parseInt(hex.substring(0, 2), 16) / 255;
+      const g = parseInt(hex.substring(2, 4), 16) / 255;
+      const b = parseInt(hex.substring(4, 6), 16) / 255;
+
+      const max = Math.max(r, g, b), min = Math.min(r, g, b);
+      let h = 0, s = 0, l = (max + min) / 2;
+
+      if (max !== min) {
+        const d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        switch (max) {
+          case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+          case g: h = (b - r) / d + 2; break;
+          case b: h = (r - g) / d + 4; break;
+        }
+        h /= 6;
+      }
+      return {h: h * 360, s: s * 100, l: l * 100};
+    }
+
+    // Helper: Determine high contrast text color (Black/White)
+    function getTextColor(hexColor) {
+      if (!hexColor || typeof hexColor !== 'string') return '#111827';
+      const hex = hexColor.replace('#', '');
+      if (hex.length < 6) return '#111827';
+      const r = parseInt(hex.substring(0, 2), 16) || 0;
+      const g = parseInt(hex.substring(2, 4), 16) || 0;
+      const b = parseInt(hex.substring(4, 6), 16) || 0;
+      const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+      return luminance > 0.55 ? '#111827' : '#FFFFFF';
+    }
+
+    // Sorting functions
+    function sortAlphanumeric(a, b) {
+      const codeA = (a && a.code) ? String(a.code) : '';
+      const codeB = (b && b.code) ? String(b.code) : '';
+      return codeA.localeCompare(codeB, undefined, {numeric: true, sensitivity: 'base'});
+    }
+
+    function getSortedData(sortBy) {
+      const dataCopy = Array.from(
+        new Map(rawCopicData.filter(item => item && item.code).map(item => [item.code, item])).values()
+      );
+
+      switch (sortBy) {
+        case 'hueLightness':
+          return dataCopy.sort((colorA, colorB) => {
+            // Convert both colors to the LCh color space (Lightness, Chroma, Hue)
+            const [l1, c1, h1] = window.chroma(colorA.color).lch();
+            const [l2, c2, h2] = window.chroma(colorB.color).lch();
+
+            // 1. Handle achromatic colors (pure blacks, whites, grays)
+            // If a color has almost no chroma (saturation), its hue is erratic.
+            // We can push them to the beginning or end by checking lightness.
+            const isAchromaticA = c1 < 5;
+            const isAchromaticB = c2 < 5;
+
+            if (isAchromaticA && !isAchromaticB) return -1; // Move grays to the front
+            if (!isAchromaticA && isAchromaticB) return 1;
+            if (isAchromaticA && isAchromaticB) return l1 - l2; // Sort grays by brightness
+
+            // 2. Sort vibrant colors by Hue (0 to 360)
+            // If hues are significantly different, sort by hue to get a rainbow effect
+            if (Math.abs(h1 - h2) > 15) {
+              return h1 - h2;
+            }
+
+            // 3. If they share a similar hue, sort by Lightness (perceived brightness)
+            return l1 - l2;
+          });
+        case 'hue':
+          return dataCopy.sort((a, b) => hexToHSL(a.color).h - hexToHSL(b.color).h);
+        case 'saturation':
+          return dataCopy.sort((a, b) => hexToHSL(b.color).s - hexToHSL(a.color).s);
+        case 'lightness':
+          return dataCopy.sort((a, b) => hexToHSL(b.color).l - hexToHSL(a.color).l);
+        case 'code':
+        default:
+          return dataCopy.sort(sortAlphanumeric);
+      }
+    }
+
+
+
+    // Toggle Color ON/OFF
+    function toggleColors() {
+      showColors = !showColors;
+      const btnLabel = document.getElementById('toggle-color-label');
+      if (showColors) {
+        document.body.classList.remove('no-color');
+        btnLabel.innerText = "Colors: ON";
+      } else {
+        document.body.classList.add('no-color');
+        btnLabel.innerText = "Colors: OFF (Blank)";
+      }
+    }
+
+    // Handle Sort Selector Change
+    function handleSortChange() {
+      const sortVal = document.getElementById('sort-select').value;
+      const statusLabel = document.getElementById('sort-status-label');
+
+      const names = {
+        code: 'Color Label',
+        hueLightness: 'Hue and Lightness',
+        hue: 'Hue Spectrum',
+        saturation: 'Saturation',
+        lightness: 'Lightness'
+      };
+
+      if (statusLabel) {
+        statusLabel.innerText = `Sorted By ${names[sortVal] || 'Color Label'} • 358 Swatches`;
+      }
+
+      renderGrid(getSortedData(sortVal));
+    }
+
+    // Render Modern CSS Hexagon Grid
+    function renderGrid(data) {
+      const container = document.getElementById('hex-container');
+      if (!container) return;
+      container.innerHTML = '';
+
+      // Items per row calculation for staggering alternate lines
+      const itemsPerRow = 19;
+
+      data.forEach((item, idx) => {
+        if (!item) return;
+        const colorVal = item.color || '#CCCCCC';
+        const textColor = getTextColor(colorVal);
+
+        const cell = document.createElement('div');
+        const isOffsetRow = Math.floor(idx / itemsPerRow) % 2 === 1 && (idx % itemsPerRow === 0);
+
+        cell.className = `hex-cell ${isOffsetRow ? 'hex-row-shift' : ''}`;
+        cell.style.backgroundColor = colorVal;
+        cell.setAttribute('data-code', (item.code || '').toUpperCase());
+
+        cell.innerHTML = `
+          <span class="hex-code" style="color: ${textColor};">${item.code || ''}</span>
+        `;
+
+        container.appendChild(cell);
+      });
+
+      filterHexes();
+    }
+
+    // Live Search Filter
+    function filterHexes() {
+      const query = document.getElementById('search').value.trim().toUpperCase();
+      const cells = document.querySelectorAll('.hex-cell');
+
+      cells.forEach(cell => {
+        const code = cell.getAttribute('data-code');
+        if (!query || (code && code.includes(query))) {
+          cell.style.opacity = '1';
+          cell.style.transform = 'scale(1)';
+        } else {
+          cell.style.opacity = '0.12';
+          cell.style.transform = 'scale(0.85)';
+        }
+      });
+    }
+
+    // Initialize Grid on Page Load
+    window.onload = function () {
+      renderGrid(getSortedData('code'));
+    };
+  </script>
+</body>
+
+</html>
