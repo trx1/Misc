@@ -316,6 +316,7 @@
     <footer
       class="mt-4 pt-2 border-t border-gray-200 flex justify-between items-center text-[8px] text-gray-400 uppercase tracking-wider">
       <span>Layout optimized for Standard 8.5" x 11" Paper</span>
+      <span>Created By Chad Urvig</span>
       <span>Complete Range (358 Unique Codes)</span>
     </footer>
   </main>
@@ -656,7 +657,7 @@
       };
 
       if (statusLabel) {
-        statusLabel.innerText = `Sorted By ${names[sortVal] || 'Color Label'} • 358 Swatches`;
+        statusLabel.innerText = `Sorted By ${names[sortVal] || 'Family'} • ${rawCopicData.length} Swatches`;
       }
 
       renderGrid(getSortedData(sortVal));
@@ -701,7 +702,7 @@
       const dataCopy = Array.from(new Map(rawCopicData.map(item => [item.code, item])).values());
       const statusLabel = document.getElementById('sort-status-label');
       if (statusLabel) {
-        statusLabel.innerText = `Non-Overlapping Color Wheel Layout • 358 Swatches`;
+        statusLabel.innerText = `Color Wheel Layout • ${rawCopicData.length} Swatches`;
       }
 
       // Separate Achromatic (Grays/Neutrals) vs Chromatic (Vibrant Hues)
@@ -837,7 +838,7 @@
 
     // Initialize Page on Window Load
     window.onload = function () {
-      renderGrid(getSortedData('code'));
+      renderGrid(getSortedData('family'));
     };
   </script>
 </body>
